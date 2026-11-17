@@ -13,3 +13,12 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Archivos locales de herramientas y compilación
+.idea/
+.kotlin/
+.codex-gradle-cache/
+**/build/
+*.jks
+*.keystore
+keystore.properties

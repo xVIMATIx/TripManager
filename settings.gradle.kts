@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TripManager"
+rootProject.name = "Trip Manager"
 include(":app")

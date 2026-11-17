@@ -1,0 +1,124 @@
+@startuml TripManager Database Schema
+
+!define PK_COLOR #FFD700
+!define FK_COLOR #87CEEB
+!define TABLE_COLOR #E6F3FF
+
+skinparam linetype ortho
+skinparam roundcorner 10
+skinparam shadowing false
+
+entity "users" as users TABLE_COLOR {
+  * **username** : String <<PK>> <<PK_COLOR>>
+  --
+  password : String
+}
+
+entity "trips" as trips TABLE_COLOR {
+  * **id** : Long <<PK>> <<PK_COLOR>>
+  --
+  destination : String
+  startDate : Long
+  endDate : Long
+  tripType : TripType
+  username : String <<FK>> <<FK_COLOR>>
+}
+
+entity "documents" as documents TABLE_COLOR {
+  * **id** : Long <<PK>> <<PK_COLOR>>
+  --
+  tripId : Long <<FK>> <<FK_COLOR>>
+  title : String
+  fileName : String
+  filePath : String
+  fileType : String
+  createdAt : Long
+}
+
+entity "itinerary_items" as itinerary_items TABLE_COLOR {
+  * **id** : Long <<PK>> <<PK_COLOR>>
+  --
+  tripId : Long <<FK>> <<FK_COLOR>>
+  activityDateTime : Long
+  description : String
+  hasReminder : Boolean
+  reminderTimeBefore : String
+  alertType : AlertType
+}
+
+entity "saved_flights" as saved_flights TABLE_COLOR {
+  * **id** : Long <<PK>> <<PK_COLOR>>
+  --
+  flightNumber : String
+  origin : String
+  originName : String?
+  destination : String
+  destinationName : String?
+  departureTime : Long
+  arrivalTime : Long
+  airline : String?
+  gate : String?
+  status : FlightStatus
+  delayMinutes : Int
+  dateAdded : Long
+}
+
+entity "packing_items" as packing_items TABLE_COLOR {
+  * **id** : Long <<PK>> <<PK_COLOR>>
+  --
+  tripId : Long? <<FK>> <<FK_COLOR>>
+  category : PackingCategory
+  item : String
+  isChecked : Boolean
+  isCustom : Boolean
+}
+
+' Relaciones
+users ||--o{ trips : "tiene"
+trips ||--o{ documents : "contiene"
+trips ||--o{ itinerary_items : "tiene"
+trips ||--o{ packing_items : "tiene"
+
+note right of users
+  Tabla de usuarios del sistema
+  PK: username
+end note
+
+note right of trips
+  Tabla de viajes
+  PK: id
+  FK: username -> users.username
+  tripType: VACATION | WORK
+end note
+
+note right of documents
+  Documentos asociados a un viaje
+  PK: id
+  FK: tripId -> trips.id
+end note
+
+note right of itinerary_items
+  Items del itinerario de un viaje
+  PK: id
+  FK: tripId -> trips.id
+  alertType: IMPORTANT | NORMAL
+end note
+
+note right of saved_flights
+  Vuelos guardados (independientes)
+  PK: id
+  status: EN_TIEMPO | RETRASADO | CANCELADO | 
+         EN_VUELO | PROGRAMADO | DESCONOCIDO
+end note
+
+note right of packing_items
+  Items de equipaje
+  PK: id
+  FK: tripId -> trips.id (nullable para plantillas)
+  category: ROPA | CALZADO | ARTICULOS_HIGIENE |
+           ELECTRONICOS | DOCUMENTOS | MEDICINA |
+           COMIDA | OTROS
+end note
+
+@enduml
+
